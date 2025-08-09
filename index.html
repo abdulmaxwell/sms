@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Test - Africa's Talking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input, textarea, button {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Send SMS</h2>
+        <input type="text" id="phone" placeholder="Enter phone e.g. +2547..." />
+        <textarea id="message" placeholder="Enter your message"></textarea>
+        <button onclick="sendSMS()">Send</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        async function sendSMS() {
+            const phone = document.getElementById("phone").value;
+            const message = document.getElementById("message").value;
+
+            if (!phone || !message) {
+                document.getElementById("status").innerText = "Please fill all fields.";
+                return;
+            }
+
+            document.getElementById("status").innerText = "Sending...";
+
+            try {
+                const res = await fetch("/send-sms", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ phone, message })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById("status").innerText = "✅ SMS Sent!";
+                } else {
+                    document.getElementById("status").innerText = "❌ Failed: " + data.error;
+                }
+            } catch (err) {
+                document.getElementById("status").innerText = "❌ Error: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
